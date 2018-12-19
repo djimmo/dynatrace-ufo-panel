@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/module.js"],"names":["DynatraceUfoCtrl"],"mappings":";;;;;;;;AAASA,sB,sBAAAA,gB;;;2BAGPA,gB","file":"module.js","sourcesContent":["import { DynatraceUfoCtrl } from './dynatraceufo_ctrl';\r\n\r\nexport {\r\n  DynatraceUfoCtrl as PanelCtrl\r\n};\r\n"]}

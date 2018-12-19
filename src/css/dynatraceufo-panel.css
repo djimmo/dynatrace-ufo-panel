@@ -1,0 +1,18 @@
+.dynatraceufo-panel {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border: 1px solid black;
+  vertical-align:middle;
+}
+
+.ufoRings {
+  flex: 3;
+  margin: auto;
+  /* border: 1px solid red; */
+}
+.ufoLogo {
+  flex: 0;
+  margin: auto;
+  border: 1px solid green; 
+}

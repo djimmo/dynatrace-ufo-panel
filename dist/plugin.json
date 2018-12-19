@@ -1,0 +1,30 @@
+{
+  "type": "panel",
+  "name": "Dynatrace Ufo Visualisation",
+  "id": "djimmo-dynatrace-ufo",
+
+  "info": {
+    "description": "Dynatrace Ufo Visualisation",
+    "author": {
+      "name": "Djim Molenkamp",
+      "url": "https://github.com/djimmo"
+    },
+    "keywords": ["dynatrace", "ufo", "panel"],
+    "logos": {
+      "small": "img/dynatracelogo.png",
+      "large": "img/dynatracelogo.png"
+    },
+    "links": [
+      {"name": "Project site", "url": "https://github.com/djimmo/dynatrace-ufo-grafana-panel"},
+      {"name": "MIT License", "url": "https://github.com/djimmo/dynatrace-ufo-grafana-panel/blob/master/LICENSE"}
+    ],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2018-12-19"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "5.x.x",
+    "plugins": [ ]
+  }
+}
