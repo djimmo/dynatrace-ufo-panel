@@ -30,7 +30,7 @@
       </table>
       <br>
       Select UFO:
-      <select name="ufo" ng-model="ctrl.selectedUfo" ng-options="option for option in ctrl.availUfos"> 
+      <select name="ufo" ng-model="ctrl.selectedUfo" ng-options="option for option in ctrl.availUfos" ng-change="ctrl.selectUfo()"> 
         </select>
     </div>
   </div>

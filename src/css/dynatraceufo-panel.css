@@ -1,16 +1,12 @@
 .dynatraceufo-panel {
   display: flex;
   flex-direction: row;
-  /* width: 100%; */
-  border: 1px solid black;
-  /* vertical-align: middle; */
 }
 
 .ufoRings {
   position: relative;
   flex: 2;
   margin: auto;
-  /* border: 1px solid red; */
   min-width: 0;
 }
 
@@ -18,13 +14,12 @@
   display: grid;
   flex: 1;
   margin: auto; 
-  /* border: 1px solid green; */
 }
 
 .ufoLogoContainer {
   display: grid;
   grid-template-columns: repeat(2, 40px);
-  grid-gap: 10px;
+  grid-gap: 3px;
   justify-self: center;  
   width: 90px;
   margin-bottom: 10px;
@@ -32,8 +27,6 @@
 
 .ufoLogoLed {
   border-radius: 5px;
-  /* padding: 7px; */
-  /* font-size: 150%; */
   width: 40px;
   height: 40px
 }

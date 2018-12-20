@@ -11,5 +11,11 @@ The plugin was tested with:
 Copy the dist folder in your grafana plugin directory and rename it to dynatrace-ufo-panel.
 
 # Versions
+## v1.1 (20/12/2018)
+- Connected to actual datasource
+- Morph and Whirl now working
+- Fixed memory leak
+- Code cleanup
+
 ## v1.0 (19/12/2018)
 - First Version

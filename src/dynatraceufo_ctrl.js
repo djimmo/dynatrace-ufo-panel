@@ -1,25 +1,10 @@
 import { MetricsPanelCtrl } from 'app/plugins/sdk';
-import _ from 'lodash';
-import TimeSeries from 'app/core/time_series';
 import './css/dynatraceufo-panel.css!';
 import './Chart.js'
 
-const panelDefaults = {
-  bgColor: null,
-
-  dynatraceUfoSettings: {
-    fontColor: 'gray',
-    gridColor: 'gray',
-    fontSize: 14
-  }
-};
-
 export class DynatraceUfoCtrl extends MetricsPanelCtrl {
-  constructor($scope, $injector, $rootScope) {
+  constructor($scope, $injector, $interval) {
     super($scope, $injector);
-    _.defaultsDeep(this.panel, panelDefaults);
-
-    this.$rootScope = $rootScope;
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
@@ -36,24 +21,99 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
     this.canvasid = "canvas";
 
-    this.currentOptions = null;
-
-    this.ufoId = null;
-    this.ufoClientIP = null;
-    this.ufoWifiSsid = null;
     this.topColors = [];
     this.bottomColors = [];
     this.logoColors = [];
 
-    this.availUfos = [];
-    this.selectedUfo = null;
+    this.opacity = 0xff;
+    this.morphFadeOut = true;
+    this.curColors = null;
 
+    this.updateLedData = function () {
+      // Reset whirl and morph params
+      this.opacity = 0xff;
+      this.morphFadeOut = true;
 
-    this.updateUfo();
+      // Get data for selected Ufo and fill array with current colors
+      var selectedUfoJson = this.json.filter(val => val.device.id === this.selectedUfo).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+      this.ufoClientIP = selectedUfoJson.device.clientIP;
+      this.ufoWifiSsid = selectedUfoJson.device.ssid;
+      this.logoColors = selectedUfoJson.device.leds.logo.map(val => '#' + val + this.opacity.toString(16));
+      this.topColors = selectedUfoJson.device.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
+      this.bottomColors = selectedUfoJson.device.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+      this.render();
+
+      // Set Whirl
+      $interval.cancel(this.whirlIntervalTop);
+      if (selectedUfoJson.device.leds.top.whirl.speed > 0) {
+        this.whirlIntervalTop = $interval(() => {
+          if (selectedUfoJson.device.leds.top.whirl.clockwise) {
+            this.topColors.unshift(this.topColors.pop());
+          } else {
+            this.topColors.push(this.topColors.shift());
+          }
+          this.render();
+        }, 1000);
+      }
+
+      $interval.cancel(this.whirlIntervalBottom);
+      if (selectedUfoJson.device.leds.bottom.whirl.speed > 0) {
+        this.whirlIntervalBottom = $interval(() => {
+          if (selectedUfoJson.device.leds.bottom.whirl.clockwise) {
+            this.bottomColors.unshift(this.bottomColors.pop());
+          } else {
+            this.bottomColors.push(this.bottomColors.shift());
+          }
+          this.render();
+        }, 1000);
+      }
+
+      // Set Morph
+      $interval.cancel(this.morphIntervalTop);
+      if (selectedUfoJson.device.leds.top.morph.state === 1) {
+        this.morphIntervalTop = $interval(() => {
+          if (this.morphFadeOut) {
+            this.opacity -= 0x0f;
+            if (this.opacity == 0x1e) {
+              this.morphFadeOut = !this.morphFadeOut;
+            }
+          } else {
+            this.opacity += 0x0f;
+            if (this.opacity == 0xff) {
+              this.morphFadeOut = !this.morphFadeOut;
+            }
+          }
+          this.topColors = this.topColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
+          this.render();
+        }, 100);
+
+        $interval.cancel(this.morphIntervalBottom);
+        if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
+          this.morphIntervalBottom = $interval(() => {
+            if (this.morphFadeOut) {
+              this.opacity -= 0x0f;
+              if (this.opacity == 0x1e) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            } else {
+              this.opacity += 0x0f;
+              if (this.opacity == 0xff) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            }
+            this.bottomColors = this.bottomColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
+            this.render();
+          }, 100);
+        }
+      }
+
+      console.log('Visualizing UFO on IP: ' + selectedUfoJson.device.clientIP + '. Connected to WiFi: ' + selectedUfoJson.device.ssid);
+      console.log('UFO has ' + this.topColors.length + ' top LEDS and ' + this.bottomColors.length + ' bottom LEDS.');
+    }
   }
 
   onInitEditMode() {
-    this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
+    // this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
   }
 
   onPanelTeardown() {
@@ -61,17 +121,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   }
 
   onDataError() {
-    this.series = [];
-    this.render();
-  }
-
-  whirl(clockwise) {
-    if (clockwise) {
-      config.data.datasets[0].backgroundColor.unshift(config.data.datasets[0].backgroundColor.pop());
-    } else {
-      config.data.datasets[0].backgroundColor.push(config.data.datasets[0].backgroundColor.shift());
-    }
-    console.log('test: trying to whirl!');
+    console.log('There has been a data error!');
     this.render();
   }
 
@@ -80,6 +130,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       datasets: [{
         data: this.createLEDring(this.bottomColors.length),
         backgroundColor: this.bottomColors,
+        fillColor: 'rgba(0,0,0,0)',
         label: 'Bottom Ring'
       }, {
         data: this.createLEDring(this.topColors.length),
@@ -91,17 +142,10 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
     this.options = {
       responsive: true,
-      aspectRatio: 1.4,      
+      aspectRatio: 1.4,
       legend: false,
       multiTooltipTemplate: '<%= datasetLabel %> - <%= value %>',
-      // title: {
-      //   display: true,
-      //   text: 'Dynatrace Ufo ' + this.ufoId
-      // },
-      animation: {
-        animateRotate: false,
-        animateScale: true
-      }
+      animation: false
     };
 
     var config = {
@@ -110,43 +154,30 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       options: this.options
     };
 
-    if (this.currentOptions == null)
-      this.currentOptions = JSON.stringify(this.options);
-
     if (this.ctx == null)
       if (document.getElementById(this.canvasid) != null)
         this.ctx = document.getElementById(this.canvasid).getContext('2d');
 
     if (this.ctx != null) {
-      this.ufo = new Chart(this.ctx, config);
+      if (this.ufo == null) {
+        this.ufo = new Chart(this.ctx, config);
+      } else {
+        this.ufo.data = this.data;
+        this.ufo.update();
+      }
     }
   }
 
   onDataReceived(dataList) {
     console.log('Data Received!');
     console.log(dataList);
+    console.log(dataList[0].datapoints);
+    this.json = dataList[0].datapoints;
 
-    var jsonData = '{"timestamp":"1827609","device":{"id":"ufo-30aea420be35","clientIP":"172.28.165.246","ssid":"Royal-Guest","version":"Dec 17 2018 - 12:02:57","build":"1000","cpu":"ESP32","battery":"100","temperature":"22.12","leds": {"logo": ["ff0000", "00ff40", "00ff00", "000044"], "top": {"color": ["ff0000","00f400", "ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ff0000","ffff00","ff0000"],"background": "000000","whirl": {"speed": 0,"clockwise": 0},"morph": { "state": 1, "period": 80, "periodTick": 80, "speed": 8, "speedTick": 1, "percentage": 68}},"bottom": {"color": ["004400","ff4400","ff4400","ff4400","004400","004400","004400","004400","004400","004400","004400","004400","004400","004400","004400"],"background": "000000","whirl": {"speed": 0,"clockwise": 0},"morph": { "state": 1, "period": 80, "periodTick": 80, "speed": 8, "speedTick": 3, "percentage": 70}}},"freemem":"143588"}}';
-    var json = JSON.parse(jsonData);
-
-    this.ufoId = json.device.id;
-    this.availUfos.push(this.ufoId);
+    this.availUfos = [...new Set(this.json.map(val => val.device.id))];
+    console.log(this.availUfos);
     this.selectedUfo = this.availUfos[0];
-    this.ufoClientIP = json.device.clientIP;
-    this.ufoWifiSsid = json.device.ssid;
-    this.logoColors = json.device.leds.logo.map(val => '#' + val);
-    this.topColors = json.device.leds.top.color.map(val => '#' + val);
-    this.bottomColors = json.device.leds.bottom.color.map(val => '#' + val);
-
-
-    console.log('Visualizing UFO on IP: ' + json.device.clientIP + '. Connected to WiFi: ' + json.device.ssid);
-    console.log('UFO has ' + this.topColors.length + ' top LEDS and ' + this.bottomColors.length + ' bottom LEDS.');
-
-    this.render();
-  }
-
-  updateUfo() {
-    this.nextTickPromise = this.$timeout(this.updateUfo.bind(this), 1000);
+    this.updateLedData();
   }
 
   createLEDring(noOfLeds) {
@@ -163,6 +194,11 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       arr[i] = 'LED #' + (i + 1);
     }
     return arr;
+  }
+
+  selectUfo() {
+    console.log('Ufo ' + this.selectedUfo + ' selected.');
+    this.updateLedData();
   }
 }
 
