@@ -86,25 +86,25 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
           this.topColors = this.topColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
           this.render();
         }, 100);
+      }
 
-        $interval.cancel(this.morphIntervalBottom);
-        if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
-          this.morphIntervalBottom = $interval(() => {
-            if (this.morphFadeOut) {
-              this.opacity -= 0x0f;
-              if (this.opacity == 0x1e) {
-                this.morphFadeOut = !this.morphFadeOut;
-              }
-            } else {
-              this.opacity += 0x0f;
-              if (this.opacity == 0xff) {
-                this.morphFadeOut = !this.morphFadeOut;
-              }
+      $interval.cancel(this.morphIntervalBottom);
+      if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
+        this.morphIntervalBottom = $interval(() => {
+          if (this.morphFadeOut) {
+            this.opacity -= 0x0f;
+            if (this.opacity == 0x1e) {
+              this.morphFadeOut = !this.morphFadeOut;
             }
-            this.bottomColors = this.bottomColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
-            this.render();
-          }, 100);
-        }
+          } else {
+            this.opacity += 0x0f;
+            if (this.opacity == 0xff) {
+              this.morphFadeOut = !this.morphFadeOut;
+            }
+          }
+          this.bottomColors = this.bottomColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
+          this.render();
+        }, 100);
       }
 
       console.log('Visualizing UFO on IP: ' + selectedUfoJson.device.clientIP + '. Connected to WiFi: ' + selectedUfoJson.device.ssid);

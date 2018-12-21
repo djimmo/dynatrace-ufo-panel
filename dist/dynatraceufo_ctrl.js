@@ -97,10 +97,6 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
           _this.bottomColors = [];
           _this.logoColors = [];
 
-          // this.availUfos = [];
-          // this.selectedUfo = null;
-          // this.json = null;
-
           _this.opacity = 0xff;
           _this.morphFadeOut = true;
           _this.curColors = null;
@@ -176,27 +172,27 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
                 });
                 _this2.render();
               }, 100);
+            }
 
-              $interval.cancel(this.morphIntervalBottom);
-              if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
-                this.morphIntervalBottom = $interval(function () {
-                  if (_this2.morphFadeOut) {
-                    _this2.opacity -= 0x0f;
-                    if (_this2.opacity == 0x1e) {
-                      _this2.morphFadeOut = !_this2.morphFadeOut;
-                    }
-                  } else {
-                    _this2.opacity += 0x0f;
-                    if (_this2.opacity == 0xff) {
-                      _this2.morphFadeOut = !_this2.morphFadeOut;
-                    }
+            $interval.cancel(this.morphIntervalBottom);
+            if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
+              this.morphIntervalBottom = $interval(function () {
+                if (_this2.morphFadeOut) {
+                  _this2.opacity -= 0x0f;
+                  if (_this2.opacity == 0x1e) {
+                    _this2.morphFadeOut = !_this2.morphFadeOut;
                   }
-                  _this2.bottomColors = _this2.bottomColors.map(function (val) {
-                    return val.substring(0, 7) + _this2.opacity.toString(16);
-                  });
-                  _this2.render();
-                }, 100);
-              }
+                } else {
+                  _this2.opacity += 0x0f;
+                  if (_this2.opacity == 0xff) {
+                    _this2.morphFadeOut = !_this2.morphFadeOut;
+                  }
+                }
+                _this2.bottomColors = _this2.bottomColors.map(function (val) {
+                  return val.substring(0, 7) + _this2.opacity.toString(16);
+                });
+                _this2.render();
+              }, 100);
             }
 
             console.log('Visualizing UFO on IP: ' + selectedUfoJson.device.clientIP + '. Connected to WiFi: ' + selectedUfoJson.device.ssid);
