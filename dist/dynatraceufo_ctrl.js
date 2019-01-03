@@ -116,7 +116,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
             })[0];
             this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
             this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
-            this.ufoLastUpdate = selectedUfoJson.ActivityTime;
+            this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
             this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(function (val) {
               return '#' + val + _this2.opacity.toString(16);
             });
@@ -267,10 +267,14 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
             this.json = dataList[0].datapoints;
 
             this.availUfos = [].concat(_toConsumableArray(new Set(this.json.map(function (val) {
-              return val.detailInfo.ufo + ' (' + val.detailInfo.deviceId + ')';
+              return val.detailInfo.deviceId;
             }))));
+            // this.availUfoIds = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
             console.log(this.availUfos);
-            this.selectedUfo = this.availUfos[0];
+            console.log(this.selectedUfo);
+            if (this.selectedUfo === undefined) {
+              this.selectedUfo = this.availUfos[0];
+            }
             this.updateLedData();
           }
         }, {

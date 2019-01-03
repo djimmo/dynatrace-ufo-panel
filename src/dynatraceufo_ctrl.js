@@ -38,7 +38,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       var selectedUfoJson = this.json.filter(val => val.detailInfo.deviceId === this.selectedUfo).sort((a, b) => new Date(b.ActivityTime) - new Date(a.ActivityTime))[0];
       this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
       this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
-      this.ufoLastUpdate = selectedUfoJson.ActivityTime;
+      this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
       this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
       this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
       this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
@@ -174,9 +174,13 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
     console.log(dataList[0].datapoints);
     this.json = dataList[0].datapoints;
 
-    this.availUfos = [...new Set(this.json.map(val => val.detailInfo.ufo + ' (' + val.detailInfo.deviceId + ')'))];
+    this.availUfos = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
+    // this.availUfoIds = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
     console.log(this.availUfos);
-    this.selectedUfo = this.availUfos[0];
+    console.log(this.selectedUfo);
+    if (this.selectedUfo === undefined) {
+      this.selectedUfo = this.availUfos[0];
+    }
     this.updateLedData();
   }
 

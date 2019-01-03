@@ -32,14 +32,14 @@
             Last update:
           </td>
           <td>
-            {{ctrl.ufoLastUpdate}}
+            {{ctrl.ufoLastUpdate | date:'dd/MM hh:mm'}}
           </td>
         </tr>
       </table>
-      <br>
       Select UFO:
-      <select name="ufo" ng-model="ctrl.selectedUfo" ng-options="option for option in ctrl.availUfos" ng-change="ctrl.selectUfo()"> 
-        </select>
+      <select name="ufo" ng-model="ctrl.selectedUfo" ng-change="ctrl.selectUfo()">
+        <option ng-repeat="option in ctrl.availUfos">{{option}}</option>
+      </select>
     </div>
   </div>
 </div>
