@@ -35,19 +35,19 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       this.morphFadeOut = true;
 
       // Get data for selected Ufo and fill array with current colors
-      var selectedUfoJson = this.json.filter(val => val.device.id === this.selectedUfo).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-      this.ufoClientIP = selectedUfoJson.device.clientIP;
-      this.ufoWifiSsid = selectedUfoJson.device.ssid;
-      this.logoColors = selectedUfoJson.device.leds.logo.map(val => '#' + val + this.opacity.toString(16));
-      this.topColors = selectedUfoJson.device.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
-      this.bottomColors = selectedUfoJson.device.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+      var selectedUfoJson = this.json.filter(val => val.detailInfo.deviceId === this.selectedUfo).sort((a, b) => new Date(b.ActivityTime) - new Date(a.ActivityTime))[0];
+      this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
+      this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
+      this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
+      this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
+      this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
       this.render();
 
       // Set Whirl
       $interval.cancel(this.whirlIntervalTop);
-      if (selectedUfoJson.device.leds.top.whirl.speed > 0) {
+      if (selectedUfoJson.detailInfo.leds.top.whirl.speed > 0) {
         this.whirlIntervalTop = $interval(() => {
-          if (selectedUfoJson.device.leds.top.whirl.clockwise) {
+          if (selectedUfoJson.detailInfo.leds.top.whirl.clockwise) {
             this.topColors.unshift(this.topColors.pop());
           } else {
             this.topColors.push(this.topColors.shift());
@@ -57,9 +57,9 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       }
 
       $interval.cancel(this.whirlIntervalBottom);
-      if (selectedUfoJson.device.leds.bottom.whirl.speed > 0) {
+      if (selectedUfoJson.detailInfo.leds.bottom.whirl.speed > 0) {
         this.whirlIntervalBottom = $interval(() => {
-          if (selectedUfoJson.device.leds.bottom.whirl.clockwise) {
+          if (selectedUfoJson.detailInfo.leds.bottom.whirl.clockwise) {
             this.bottomColors.unshift(this.bottomColors.pop());
           } else {
             this.bottomColors.push(this.bottomColors.shift());
@@ -70,7 +70,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
       // Set Morph
       $interval.cancel(this.morphIntervalTop);
-      if (selectedUfoJson.device.leds.top.morph.state === 1) {
+      if (selectedUfoJson.detailInfo.leds.top.morph.state === 1) {
         this.morphIntervalTop = $interval(() => {
           if (this.morphFadeOut) {
             this.opacity -= 0x0f;
@@ -89,7 +89,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       }
 
       $interval.cancel(this.morphIntervalBottom);
-      if (selectedUfoJson.device.leds.bottom.morph.state === 1) {
+      if (selectedUfoJson.detailInfo.leds.bottom.morph.state === 1) {
         this.morphIntervalBottom = $interval(() => {
           if (this.morphFadeOut) {
             this.opacity -= 0x0f;
@@ -107,7 +107,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
         }, 100);
       }
 
-      console.log('Visualizing UFO on IP: ' + selectedUfoJson.device.clientIP + '. Connected to WiFi: ' + selectedUfoJson.device.ssid);
+      console.log('Visualizing UFO on IP: ' + selectedUfoJson.detailInfo.clientIP + '. Connected to WiFi: ' + selectedUfoJson.detailInfo.ssid);
       console.log('UFO has ' + this.topColors.length + ' top LEDS and ' + this.bottomColors.length + ' bottom LEDS.');
     }
   }
@@ -117,7 +117,6 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   }
 
   onPanelTeardown() {
-    this.$timeout.cancel(this.nextTickPromise);
   }
 
   onDataError() {
@@ -174,7 +173,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
     console.log(dataList[0].datapoints);
     this.json = dataList[0].datapoints;
 
-    this.availUfos = [...new Set(this.json.map(val => val.device.id))];
+    this.availUfos = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
     console.log(this.availUfos);
     this.selectedUfo = this.availUfos[0];
     this.updateLedData();
