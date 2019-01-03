@@ -18,17 +18,14 @@
 
 .ufoLogoContainer {
   display: grid;
-  grid-template-columns: repeat(2, 40px);
-  grid-gap: 3px;
-  justify-self: center;  
-  width: 90px;
-  margin-bottom: 10px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 30px 30px;
+  gap: 2px;
 }
 
 .ufoLogoLed {
   border-radius: 5px;
-  width: 40px;
-  height: 40px
+  border: 1px solid #212124;
 }
 
 table {

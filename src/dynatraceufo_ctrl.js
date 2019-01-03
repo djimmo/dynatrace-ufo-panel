@@ -146,7 +146,6 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       datasets: [{
         data: this.createLEDring(this.bottomColors.length),
         backgroundColor: this.bottomColors,
-        fillColor: 'rgba(0,0,0,0)',
         label: 'Bottom Ring'
       }, {
         data: this.createLEDring(this.topColors.length),
@@ -187,17 +186,19 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   onDataReceived(dataList) {
     console.log('Data Received!');
     console.log(dataList);
-    console.log(dataList[0].datapoints);
-    this.json = dataList[0].datapoints;
+    if (dataList.length !== 0) {
+      console.log(dataList[0].datapoints);
+      this.json = dataList[0].datapoints;
 
-    this.availUfos = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
-    // this.availUfoIds = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
-    console.log(this.availUfos);
-    console.log(this.selectedUfo);
-    if (this.selectedUfo === undefined) {
-      this.selectedUfo = this.availUfos[0];
+      this.availUfos = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
+      // this.availUfoIds = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
+      console.log(this.availUfos);
+      console.log(this.selectedUfo);
+      if (this.selectedUfo === undefined) {
+        this.selectedUfo = this.availUfos[0];
+      }
+      this.updateLedData();
     }
-    this.updateLedData();
   }
 
   createLEDring(noOfLeds) {
