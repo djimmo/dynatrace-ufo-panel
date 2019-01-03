@@ -19,7 +19,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
     this.ctx = null;
     this.ufo = null;
 
-    this.canvasid = "canvas";
+    this.canvasid = Math.random();
 
     this.topColors = [];
     this.bottomColors = [];

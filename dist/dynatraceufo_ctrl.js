@@ -91,7 +91,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
           _this.ctx = null;
           _this.ufo = null;
 
-          _this.canvasid = "canvas";
+          _this.canvasid = Math.random();
 
           _this.topColors = [];
           _this.bottomColors = [];
