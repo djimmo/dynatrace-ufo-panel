@@ -1,6 +1,6 @@
 {
   "name": "djimmo-dynatrace-ufo",
-  "version": "1.0.0",
+  "version": "1.2",
   "description": "Dynatrace Ufo Visualisation Panel Plugin for Grafana",
   "main": "src/module.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "plugin",
     "panel"
   ],
-  "author": "snuids",
+  "author": "djimmo",
   "license": "MIT",
   "devDependencies": {
     "babel": "~6.5.1",

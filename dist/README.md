@@ -11,6 +11,13 @@ The plugin was tested with:
 Copy the dist folder in your grafana plugin directory and rename it to dynatrace-ufo-panel.
 
 # Versions
+## v1.2 (03/01/2019)
+- Added UfoName in dropdown
+- Logo LEDs 3 and 4 switched
+- Logo is now responsive too
+- Removed 'undefined' UFOs
+- Added last update timestamp
+
 ## v1.1 (20/12/2018)
 - Connected to ES datasource
 - Morph and Whirl now working

@@ -6,8 +6,8 @@
     <div class="ufoLogoContainer">
       <div id="logo1" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[0]}"></div>
       <div id="logo2" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[1]}"></div>
-      <div id="logo3" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[2]}"></div>
-      <div id="logo4" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[3]}"></div>
+      <div id="logo3" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[3]}"></div>
+      <div id="logo4" class="ufoLogoLed" ng-style="{'backgroundColor': ctrl.logoColors[2]}"></div>
     </div>
     <div>
       <table style="width: 100%;">
@@ -25,6 +25,14 @@
           </td>
           <td>
             {{ctrl.ufoWifiSsid}}
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right">
+            Last update:
+          </td>
+          <td>
+            {{ctrl.ufoLastUpdate}}
           </td>
         </tr>
       </table>
