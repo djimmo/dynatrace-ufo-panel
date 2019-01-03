@@ -1,10 +1,20 @@
 import { MetricsPanelCtrl } from 'app/plugins/sdk';
 import './css/dynatraceufo-panel.css!';
-import './Chart.js'
+import './Chart.js';
+import _ from 'lodash';
+
+const panelDefaults = {
+  showUfoName: true,
+  showUfoIP: true,
+  showUfoWiFi: true,
+  showUfoLastUpdate: true,
+  showDropdown: true
+};
 
 export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector, $interval) {
     super($scope, $injector);
+    _.defaults(this.panel, panelDefaults);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
@@ -19,13 +29,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
     this.ctx = null;
     this.ufo = null;
 
-    this.showUfoName = true;
-    this.showUfoIP = true;
-    this.showUfoWiFi = true;
-    this.showUfoLastUpdate = true;
-    this.showDropdown = true;
-
-    this.canvasid = Math.random();
+    this.canvasid = ("id" + (Math.random() * 100000)).replace('.', '');
 
     this.topColors = [];
     this.bottomColors = [];
@@ -46,81 +50,80 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
       this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
       this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
-      if (selectedUfoJson.detailInfo.leds) {
+      if (selectedUfoJson.detailInfo.leds !== undefined) {
         this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
         this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
         this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+
+        // Set Whirl
+        $interval.cancel(this.whirlIntervalTop);
+        if (selectedUfoJson.detailInfo.leds.top.whirl.speed > 0) {
+          this.whirlIntervalTop = $interval(() => {
+            if (selectedUfoJson.detailInfo.leds.top.whirl.clockwise) {
+              this.topColors.unshift(this.topColors.pop());
+            } else {
+              this.topColors.push(this.topColors.shift());
+            }
+            this.render();
+          }, 1000);
+        }
+
+        $interval.cancel(this.whirlIntervalBottom);
+        if (selectedUfoJson.detailInfo.leds.bottom.whirl.speed > 0) {
+          this.whirlIntervalBottom = $interval(() => {
+            if (selectedUfoJson.detailInfo.leds.bottom.whirl.clockwise) {
+              this.bottomColors.unshift(this.bottomColors.pop());
+            } else {
+              this.bottomColors.push(this.bottomColors.shift());
+            }
+            this.render();
+          }, 1000);
+        }
+
+        // Set Morph
+        $interval.cancel(this.morphIntervalTop);
+        if (selectedUfoJson.detailInfo.leds.top.morph.state === 1) {
+          this.morphIntervalTop = $interval(() => {
+            if (this.morphFadeOut) {
+              this.opacity -= 0x0f;
+              if (this.opacity == 0x1e) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            } else {
+              this.opacity += 0x0f;
+              if (this.opacity == 0xff) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            }
+            this.topColors = this.topColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
+            this.render();
+          }, 100);
+        }
+
+        $interval.cancel(this.morphIntervalBottom);
+        if (selectedUfoJson.detailInfo.leds.bottom.morph.state === 1) {
+          this.morphIntervalBottom = $interval(() => {
+            if (this.morphFadeOut) {
+              this.opacity -= 0x0f;
+              if (this.opacity == 0x1e) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            } else {
+              this.opacity += 0x0f;
+              if (this.opacity == 0xff) {
+                this.morphFadeOut = !this.morphFadeOut;
+              }
+            }
+            this.bottomColors = this.bottomColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
+            this.render();
+          }, 100);
+        }
       } else {
         this.logoColors = [];
         this.topColors = [];
         this.bottomColors = [];
       }
       this.render();
-
-      // Set Whirl
-      $interval.cancel(this.whirlIntervalTop);
-      if (selectedUfoJson.detailInfo.leds.top.whirl.speed > 0) {
-        this.whirlIntervalTop = $interval(() => {
-          if (selectedUfoJson.detailInfo.leds.top.whirl.clockwise) {
-            this.topColors.unshift(this.topColors.pop());
-          } else {
-            this.topColors.push(this.topColors.shift());
-          }
-          this.render();
-        }, 1000);
-      }
-
-      $interval.cancel(this.whirlIntervalBottom);
-      if (selectedUfoJson.detailInfo.leds.bottom.whirl.speed > 0) {
-        this.whirlIntervalBottom = $interval(() => {
-          if (selectedUfoJson.detailInfo.leds.bottom.whirl.clockwise) {
-            this.bottomColors.unshift(this.bottomColors.pop());
-          } else {
-            this.bottomColors.push(this.bottomColors.shift());
-          }
-          this.render();
-        }, 1000);
-      }
-
-      // Set Morph
-      $interval.cancel(this.morphIntervalTop);
-      if (selectedUfoJson.detailInfo.leds.top.morph.state === 1) {
-        this.morphIntervalTop = $interval(() => {
-          if (this.morphFadeOut) {
-            this.opacity -= 0x0f;
-            if (this.opacity == 0x1e) {
-              this.morphFadeOut = !this.morphFadeOut;
-            }
-          } else {
-            this.opacity += 0x0f;
-            if (this.opacity == 0xff) {
-              this.morphFadeOut = !this.morphFadeOut;
-            }
-          }
-          this.topColors = this.topColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
-          this.render();
-        }, 100);
-      }
-
-      $interval.cancel(this.morphIntervalBottom);
-      if (selectedUfoJson.detailInfo.leds.bottom.morph.state === 1) {
-        this.morphIntervalBottom = $interval(() => {
-          if (this.morphFadeOut) {
-            this.opacity -= 0x0f;
-            if (this.opacity == 0x1e) {
-              this.morphFadeOut = !this.morphFadeOut;
-            }
-          } else {
-            this.opacity += 0x0f;
-            if (this.opacity == 0xff) {
-              this.morphFadeOut = !this.morphFadeOut;
-            }
-          }
-          this.bottomColors = this.bottomColors.map(val => val.substring(0, 7) + this.opacity.toString(16));
-          this.render();
-        }, 100);
-      }
-
       console.log('Visualizing UFO on IP: ' + selectedUfoJson.detailInfo.clientIP + '. Connected to WiFi: ' + selectedUfoJson.detailInfo.ssid);
       console.log('UFO has ' + this.topColors.length + ' top LEDS and ' + this.bottomColors.length + ' bottom LEDS.');
     }
