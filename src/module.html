@@ -11,7 +11,15 @@
     </div>
     <div>
       <table style="width: 100%;">
-        <tr>
+        <tr ng-show="ctrl.showUfoName">
+          <td style="text-align: right">
+            Ufo:
+          </td>
+          <td>
+            {{ctrl.ufoName}}
+          </td>
+        </tr>
+        <tr ng-show="ctrl.showUfoIP">
           <td style="text-align: right">
             Ufo IP:
           </td>
@@ -19,7 +27,7 @@
             {{ctrl.ufoClientIP}}
           </td>
         </tr>
-        <tr>
+        <tr ng-show="ctrl.showUfoWiFi">
           <td style="text-align: right">
             WiFi:
           </td>
@@ -27,19 +35,21 @@
             {{ctrl.ufoWifiSsid}}
           </td>
         </tr>
-        <tr>
+        <tr ng-show="ctrl.showUfoLastUpdate">
           <td style="text-align: right">
             Last update:
           </td>
           <td>
-            {{ctrl.ufoLastUpdate | date:'dd/MM hh:mm'}}
+            {{ctrl.ufoLastUpdate | date:'dd/MM HH:mm'}}
           </td>
         </tr>
       </table>
-      Select UFO:
-      <select name="ufo" ng-model="ctrl.selectedUfo" ng-change="ctrl.selectUfo()">
-        <option ng-repeat="option in ctrl.availUfos">{{option}}</option>
-      </select>
+      <div ng-show="ctrl.showDropdown">
+        Select UFO:
+        <select name="ufo" ng-model="ctrl.selectedUfo" ng-change="ctrl.selectUfo()">
+          <option ng-repeat="option in ctrl.availUfos">{{option}}</option>
+        </select>
+      </div>
     </div>
   </div>
 </div>

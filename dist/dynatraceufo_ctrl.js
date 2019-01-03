@@ -91,6 +91,12 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
           _this.ctx = null;
           _this.ufo = null;
 
+          _this.showUfoName = true;
+          _this.showUfoIP = true;
+          _this.showUfoWiFi = true;
+          _this.showUfoLastUpdate = true;
+          _this.showDropdown = true;
+
           _this.canvasid = Math.random();
 
           _this.topColors = [];
@@ -114,18 +120,25 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
             }).sort(function (a, b) {
               return new Date(b.ActivityTime) - new Date(a.ActivityTime);
             })[0];
+            this.ufoName = selectedUfoJson.detailInfo.ufo;
             this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
             this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
             this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
-            this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(function (val) {
-              return '#' + val + _this2.opacity.toString(16);
-            });
-            this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(function (val) {
-              return '#' + val + _this2.opacity.toString(16);
-            });
-            this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(function (val) {
-              return '#' + val + _this2.opacity.toString(16);
-            });
+            if (selectedUfoJson.detailInfo.leds) {
+              this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(function (val) {
+                return '#' + val + _this2.opacity.toString(16);
+              });
+              this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(function (val) {
+                return '#' + val + _this2.opacity.toString(16);
+              });
+              this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(function (val) {
+                return '#' + val + _this2.opacity.toString(16);
+              });
+            } else {
+              this.logoColors = [];
+              this.topColors = [];
+              this.bottomColors = [];
+            }
             this.render();
 
             // Set Whirl
@@ -205,7 +218,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
         _createClass(DynatraceUfoCtrl, [{
           key: 'onInitEditMode',
           value: function onInitEditMode() {
-            // this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
+            this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
           }
         }, {
           key: 'onPanelTeardown',

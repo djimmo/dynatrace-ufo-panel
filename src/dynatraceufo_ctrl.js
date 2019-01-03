@@ -19,6 +19,12 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
     this.ctx = null;
     this.ufo = null;
 
+    this.showUfoName = true;
+    this.showUfoIP = true;
+    this.showUfoWiFi = true;
+    this.showUfoLastUpdate = true;
+    this.showDropdown = true;
+
     this.canvasid = Math.random();
 
     this.topColors = [];
@@ -36,12 +42,19 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
       // Get data for selected Ufo and fill array with current colors
       var selectedUfoJson = this.json.filter(val => val.detailInfo.deviceId === this.selectedUfo).sort((a, b) => new Date(b.ActivityTime) - new Date(a.ActivityTime))[0];
+      this.ufoName = selectedUfoJson.detailInfo.ufo;
       this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
       this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
       this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
-      this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
-      this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
-      this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+      if (selectedUfoJson.detailInfo.leds) {
+        this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
+        this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
+        this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+      } else {
+        this.logoColors = [];
+        this.topColors = [];
+        this.bottomColors = [];
+      }
       this.render();
 
       // Set Whirl
@@ -114,7 +127,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
-    // this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
+    this.addEditorTab('Options', 'public/plugins/djimmo-dynatrace-ufo/editor.html', 2);
   }
 
   onPanelTeardown() {

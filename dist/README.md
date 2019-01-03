@@ -16,6 +16,7 @@ Copy the dist folder in your grafana plugin directory and rename it to dynatrace
 - Logo LEDs 3 and 4 switched
 - Logo is now responsive too
 - Added last update timestamp
+- Enable/Disable UFO Display options
 
 ## v1.1 (20/12/2018)
 - Connected to ES datasource
