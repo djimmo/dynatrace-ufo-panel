@@ -10,4 +10,92 @@
 		<gf-form-switch class="gf-form" label="UFO Last Update" label-class="width-12" checked="ctrl.panel.showUfoLastUpdate"
 		 on-change="ctrl.render()"></gf-form-switch>
 	</div>
+
+	<div class="section gf-form-group">
+		<h5 class="section-heading">General Field Names in JSON Document</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">Parent Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.parent" ng-change="ctrl.render()"
+			 ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">Ufo Name Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoName" ng-change="ctrl.render()"
+			 ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">Ufo Device Id Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoDeviceId"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Client IP Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoClientIP"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO SSID Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoSSID" ng-change="ctrl.render()"
+			 ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Last Update Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.lastUpdate"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+	</div>
+
+	<div class="section gf-form-group">
+		<h5 class="section-heading">LED Field Names in JSON Document</h5>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLeds" ng-change="ctrl.render()"
+			 ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Logo Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsLogo"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Top Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsTop"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Bottom Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsBottom"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Color Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsColor"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Whirl Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsWhirl"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Whirl Speed</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsWhirlSpeed"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Whirl Direction</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsWhirlDir"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Morph Field</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsMorph"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+		<div class="gf-form">
+			<label class="gf-form-label width-12">UFO Leds Morph State</label>
+			<input type="text" class="input-small gf-form-input max-width-10" ng-model="ctrl.panel.jsonFields.ufoLedsMorphState"
+			 ng-change="ctrl.render()" ng-model-onblur>
+		</div>
+	</div>
 </div>

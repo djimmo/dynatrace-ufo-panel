@@ -8,13 +8,32 @@ const panelDefaults = {
   showUfoIP: true,
   showUfoWiFi: true,
   showUfoLastUpdate: true,
-  showDropdown: true
+  showDropdown: true,
+
+  jsonFields: {
+    parent: 'detailInfo',
+    ufoName: 'ufo',
+    ufoDeviceId: 'deviceId',
+    ufoClientIP: 'clientIP',
+    ufoSSID: 'ssid',
+    ufoLeds: 'leds',
+    ufoLedsLogo: 'logo',
+    ufoLedsTop: 'top',
+    ufoLedsBottom: 'bottom',
+    ufoLedsColor: 'color',
+    ufoLedsWhirl: 'whirl',
+    ufoLedsWhirlSpeed: 'speed',
+    ufoLedsWhirlDir: 'clockwise',
+    ufoLedsMorph: 'morph',
+    ufoLedsMorphState: 'state',
+    lastUpdate: 'ActivityTime'
+  }
 };
 
 export class DynatraceUfoCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector, $interval) {
     super($scope, $injector);
-    _.defaults(this.panel, panelDefaults);
+    _.defaultsDeep(this.panel, panelDefaults);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
@@ -45,21 +64,21 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       this.morphFadeOut = true;
 
       // Get data for selected Ufo and fill array with current colors
-      var selectedUfoJson = this.json.filter(val => val.detailInfo.deviceId === this.selectedUfo).sort((a, b) => new Date(b.ActivityTime) - new Date(a.ActivityTime))[0];
-      this.ufoName = selectedUfoJson.detailInfo.ufo;
-      this.ufoClientIP = selectedUfoJson.detailInfo.clientIP;
-      this.ufoWifiSsid = selectedUfoJson.detailInfo.ssid;
-      this.ufoLastUpdate = selectedUfoJson.ActivityTime[0];
-      if (selectedUfoJson.detailInfo.leds !== undefined) {
-        this.logoColors = selectedUfoJson.detailInfo.leds.logo.map(val => '#' + val + this.opacity.toString(16));
-        this.topColors = selectedUfoJson.detailInfo.leds.top.color.map(val => '#' + val + this.opacity.toString(16));
-        this.bottomColors = selectedUfoJson.detailInfo.leds.bottom.color.map(val => '#' + val + this.opacity.toString(16));
+      var selectedUfoJson = this.json.filter(val => val[this.panel.jsonFields.parent][this.panel.jsonFields.ufoDeviceId] === this.selectedUfo).sort((a, b) => new Date(b[this.panel.jsonFields.lastUpdate]) - new Date(a[this.panel.jsonFields.lastUpdate]))[0];
+      this.ufoName = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoName];
+      this.ufoClientIP = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoClientIP];
+      this.ufoWifiSsid = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoSSID];
+      this.ufoLastUpdate = selectedUfoJson[this.panel.jsonFields.lastUpdate][0];
+      if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds] !== undefined) {
+        this.logoColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsLogo].map(val => '#' + val + this.opacity.toString(16));
+        this.topColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsColor].map(val => '#' + val + this.opacity.toString(16));
+        this.bottomColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsColor].map(val => '#' + val + this.opacity.toString(16));
 
         // Set Whirl
         $interval.cancel(this.whirlIntervalTop);
-        if (selectedUfoJson.detailInfo.leds.top.whirl.speed > 0) {
+        if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlSpeed] > 0) {
           this.whirlIntervalTop = $interval(() => {
-            if (selectedUfoJson.detailInfo.leds.top.whirl.clockwise) {
+            if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlDir]) {
               this.topColors.unshift(this.topColors.pop());
             } else {
               this.topColors.push(this.topColors.shift());
@@ -69,9 +88,9 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
         }
 
         $interval.cancel(this.whirlIntervalBottom);
-        if (selectedUfoJson.detailInfo.leds.bottom.whirl.speed > 0) {
+        if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlSpeed] > 0) {
           this.whirlIntervalBottom = $interval(() => {
-            if (selectedUfoJson.detailInfo.leds.bottom.whirl.clockwise) {
+            if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlDir]) {
               this.bottomColors.unshift(this.bottomColors.pop());
             } else {
               this.bottomColors.push(this.bottomColors.shift());
@@ -82,7 +101,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
         // Set Morph
         $interval.cancel(this.morphIntervalTop);
-        if (selectedUfoJson.detailInfo.leds.top.morph.state === 1) {
+        if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsMorph][this.panel.jsonFields.ufoLedsMorphState] === 1) {
           this.morphIntervalTop = $interval(() => {
             if (this.morphFadeOut) {
               this.opacity -= 0x0f;
@@ -101,7 +120,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
         }
 
         $interval.cancel(this.morphIntervalBottom);
-        if (selectedUfoJson.detailInfo.leds.bottom.morph.state === 1) {
+        if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsMorph][this.panel.jsonFields.ufoLedsMorphState] === 1) {
           this.morphIntervalBottom = $interval(() => {
             if (this.morphFadeOut) {
               this.opacity -= 0x0f;
@@ -124,7 +143,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
         this.bottomColors = [];
       }
       this.render();
-      console.log('Visualizing UFO on IP: ' + selectedUfoJson.detailInfo.clientIP + '. Connected to WiFi: ' + selectedUfoJson.detailInfo.ssid);
+      console.log('Visualizing UFO on IP: ' + this.ufoClientIP + '. Connected to WiFi: ' + this.ufoWifiSsid);
       console.log('UFO has ' + this.topColors.length + ' top LEDS and ' + this.bottomColors.length + ' bottom LEDS.');
     }
   }
@@ -190,11 +209,11 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
       console.log(dataList[0].datapoints);
       this.json = dataList[0].datapoints;
 
-      this.availUfos = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
-      // this.availUfoIds = [...new Set(this.json.map(val => val.detailInfo.deviceId))];
+      this.availUfos = [...new Set(this.json.map(val => val[this.panel.jsonFields.parent][this.panel.jsonFields.ufoDeviceId]))];
       console.log(this.availUfos);
-      console.log(this.selectedUfo);
+      console.log('Selected Ufo: ' + this.selectedUfo);
       if (this.selectedUfo === undefined) {
+        console.log('No Ufo selected so selecting first one in list: ' + this.availUfos[0]);
         this.selectedUfo = this.availUfos[0];
       }
       this.updateLedData();
