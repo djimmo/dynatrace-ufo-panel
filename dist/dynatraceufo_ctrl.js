@@ -3,7 +3,7 @@
 System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js', 'lodash'], function (_export, _context) {
   "use strict";
 
-  var MetricsPanelCtrl, _, _createClass, panelDefaults, DynatraceUfoCtrl;
+  var MetricsPanelCtrl, _, _typeof, _createClass, panelDefaults, DynatraceUfoCtrl;
 
   function _toConsumableArray(arr) {
     if (Array.isArray(arr)) {
@@ -54,6 +54,12 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
       _ = _lodash.default;
     }],
     execute: function () {
+      _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+      } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+
       _createClass = function () {
         function defineProperties(target, props) {
           for (var i = 0; i < props.length; i++) {
@@ -80,21 +86,18 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
         showDropdown: true,
 
         jsonFields: {
-          parent: 'detailInfo',
-          ufoName: 'ufo',
-          ufoDeviceId: 'deviceId',
-          ufoClientIP: 'clientIP',
-          ufoSSID: 'ssid',
-          ufoLeds: 'leds',
+          ufoName: 'detailInfo.ufo',
+          ufoDeviceId: 'detailInfo.deviceId',
+          ufoClientIP: 'detailInfo.clientIP',
+          ufoSSID: 'detailInfo.ssid',
+          ufoLeds: 'detailInfo.leds',
           ufoLedsLogo: 'logo',
           ufoLedsTop: 'top',
           ufoLedsBottom: 'bottom',
           ufoLedsColor: 'color',
-          ufoLedsWhirl: 'whirl',
-          ufoLedsWhirlSpeed: 'speed',
-          ufoLedsWhirlDir: 'clockwise',
-          ufoLedsMorph: 'morph',
-          ufoLedsMorphState: 'state',
+          ufoLedsWhirlSpeed: 'whirl.speed',
+          ufoLedsWhirlDir: 'whirl.clockwise',
+          ufoLedsMorphState: 'morph.state',
           lastUpdate: 'ActivityTime'
         }
       };
@@ -132,6 +135,18 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
           _this.morphFadeOut = true;
           _this.curColors = null;
 
+          _this.traverseJson = function (model, path, def) {
+            path = path || '';
+            model = model || {};
+            def = typeof def === 'undefined' ? '' : def;
+            var parts = path.split('.');
+            if (parts.length > 1 && _typeof(model[parts[0]]) === 'object') {
+              return this.traverseJson(model[parts[0]], parts.splice(1).join('.'), def);
+            } else {
+              return model[parts[0]] || def;
+            }
+          };
+
           _this.updateLedData = function () {
             var _this2 = this;
 
@@ -141,30 +156,30 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
 
             // Get data for selected Ufo and fill array with current colors
             var selectedUfoJson = this.json.filter(function (val) {
-              return val[_this2.panel.jsonFields.parent][_this2.panel.jsonFields.ufoDeviceId] === _this2.selectedUfo;
+              return _this2.traverseJson(val, _this2.panel.jsonFields.ufoDeviceId) === _this2.selectedUfo;
             }).sort(function (a, b) {
-              return new Date(b[_this2.panel.jsonFields.lastUpdate]) - new Date(a[_this2.panel.jsonFields.lastUpdate]);
+              return new Date(_this2.traverseJson(b, _this2.panel.jsonFields.lastUpdate)[0]) - new Date(_this2.traverseJson(a, _this2.panel.jsonFields.lastUpdate)[0]);
             })[0];
-            this.ufoName = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoName];
-            this.ufoClientIP = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoClientIP];
-            this.ufoWifiSsid = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoSSID];
-            this.ufoLastUpdate = selectedUfoJson[this.panel.jsonFields.lastUpdate][0];
-            if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds] !== undefined) {
-              this.logoColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsLogo].map(function (val) {
+            this.ufoName = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoName);
+            this.ufoClientIP = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoClientIP);
+            this.ufoWifiSsid = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoSSID);
+            this.ufoLastUpdate = this.traverseJson(selectedUfoJson, this.panel.jsonFields.lastUpdate)[0];
+            if (this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds) !== '') {
+              this.logoColors = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsLogo].map(function (val) {
                 return '#' + val + _this2.opacity.toString(16);
               });
-              this.topColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsColor].map(function (val) {
+              this.topColors = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsColor].map(function (val) {
                 return '#' + val + _this2.opacity.toString(16);
               });
-              this.bottomColors = selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsColor].map(function (val) {
+              this.bottomColors = this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsColor].map(function (val) {
                 return '#' + val + _this2.opacity.toString(16);
               });
 
               // Set Whirl
               $interval.cancel(this.whirlIntervalTop);
-              if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlSpeed] > 0) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsWhirlSpeed) > 0) {
                 this.whirlIntervalTop = $interval(function () {
-                  if (selectedUfoJson[_this2.panel.jsonFields.parent][_this2.panel.jsonFields.ufoLeds][_this2.panel.jsonFields.ufoLedsTop][_this2.panel.jsonFields.ufoLedsWhirl][_this2.panel.jsonFields.ufoLedsWhirlDir]) {
+                  if (_this2.traverseJson(_this2.traverseJson(selectedUfoJson, _this2.panel.jsonFields.ufoLeds)[_this2.panel.jsonFields.ufoLedsTop], _this2.panel.jsonFields.ufoLedsWhirlDir)) {
                     _this2.topColors.unshift(_this2.topColors.pop());
                   } else {
                     _this2.topColors.push(_this2.topColors.shift());
@@ -174,9 +189,9 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
               }
 
               $interval.cancel(this.whirlIntervalBottom);
-              if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsWhirl][this.panel.jsonFields.ufoLedsWhirlSpeed] > 0) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsWhirlSpeed) > 0) {
                 this.whirlIntervalBottom = $interval(function () {
-                  if (selectedUfoJson[_this2.panel.jsonFields.parent][_this2.panel.jsonFields.ufoLeds][_this2.panel.jsonFields.ufoLedsBottom][_this2.panel.jsonFields.ufoLedsWhirl][_this2.panel.jsonFields.ufoLedsWhirlDir]) {
+                  if (_this2.traverseJson(_this2.traverseJson(selectedUfoJson, _this2.panel.jsonFields.ufoLeds)[_this2.panel.jsonFields.ufoLedsBottom], _this2.panel.jsonFields.ufoLedsWhirlDir)) {
                     _this2.bottomColors.unshift(_this2.bottomColors.pop());
                   } else {
                     _this2.bottomColors.push(_this2.bottomColors.shift());
@@ -187,7 +202,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
 
               // Set Morph
               $interval.cancel(this.morphIntervalTop);
-              if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsTop][this.panel.jsonFields.ufoLedsMorph][this.panel.jsonFields.ufoLedsMorphState] === 1) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsMorphState) === 1) {
                 this.morphIntervalTop = $interval(function () {
                   if (_this2.morphFadeOut) {
                     _this2.opacity -= 0x0f;
@@ -208,7 +223,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
               }
 
               $interval.cancel(this.morphIntervalBottom);
-              if (selectedUfoJson[this.panel.jsonFields.parent][this.panel.jsonFields.ufoLeds][this.panel.jsonFields.ufoLedsBottom][this.panel.jsonFields.ufoLedsMorph][this.panel.jsonFields.ufoLedsMorphState] === 1) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsMorphState) === 1) {
                 this.morphIntervalBottom = $interval(function () {
                   if (_this2.morphFadeOut) {
                     _this2.opacity -= 0x0f;
@@ -306,7 +321,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
               this.json = dataList[0].datapoints;
 
               this.availUfos = [].concat(_toConsumableArray(new Set(this.json.map(function (val) {
-                return val[_this3.panel.jsonFields.parent][_this3.panel.jsonFields.ufoDeviceId];
+                return _this3.traverseJson(val, _this3.panel.jsonFields.ufoDeviceId);
               }))));
               console.log(this.availUfos);
               console.log('Selected Ufo: ' + this.selectedUfo);
