@@ -110,7 +110,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
 
         // Set Morph
         $interval.cancel(this.morphIntervalTop);
-        if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsMorphState) !== 0) {
+        if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsMorphState) != 0) {
           this.morphIntervalTop = $interval(() => {
             if (this.morphFadeOut) {
               this.opacity -= 0x0f;
@@ -129,7 +129,7 @@ export class DynatraceUfoCtrl extends MetricsPanelCtrl {
         }
 
         $interval.cancel(this.morphIntervalBottom);
-        if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsMorphState) !== 0) {
+        if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsMorphState) != 0) {
           this.morphIntervalBottom = $interval(() => {
             if (this.morphFadeOut) {
               this.opacity -= 0x0f;

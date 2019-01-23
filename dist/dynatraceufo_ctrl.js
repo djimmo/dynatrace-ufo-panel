@@ -201,7 +201,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
 
               // Set Morph
               $interval.cancel(this.morphIntervalTop);
-              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsMorphState) !== 0) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsTop], this.panel.jsonFields.ufoLedsMorphState) != 0) {
                 this.morphIntervalTop = $interval(function () {
                   if (_this2.morphFadeOut) {
                     _this2.opacity -= 0x0f;
@@ -222,7 +222,7 @@ System.register(['app/plugins/sdk', './css/dynatraceufo-panel.css!', './Chart.js
               }
 
               $interval.cancel(this.morphIntervalBottom);
-              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsMorphState) !== 0) {
+              if (this.traverseJson(this.traverseJson(selectedUfoJson, this.panel.jsonFields.ufoLeds)[this.panel.jsonFields.ufoLedsBottom], this.panel.jsonFields.ufoLedsMorphState) != 0) {
                 this.morphIntervalBottom = $interval(function () {
                   if (_this2.morphFadeOut) {
                     _this2.opacity -= 0x0f;
